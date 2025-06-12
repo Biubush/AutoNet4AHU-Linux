@@ -1,2 +1,2 @@
-requests>=2.25.1
-python-systemd>=234 
+requests
+python-systemd
