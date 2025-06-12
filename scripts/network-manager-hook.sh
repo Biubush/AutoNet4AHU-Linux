@@ -9,7 +9,7 @@ STATUS="$2"
 
 # 配置文件路径
 CONFIG_FILE="/etc/autonet4ahu/config.json"
-PROGRAM_PATH="/usr/local/bin/autonet4ahu/main.py"
+PROGRAM_PATH="/usr/local/bin/autonet4ahu"
 LOG_FILE="/var/log/autonet4ahu/network-hook.log"
 
 # 确保日志目录存在
@@ -43,7 +43,7 @@ if [ "$STATUS" = "up" ] || [ "$STATUS" = "connectivity-change" ]; then
         if [ -f "$PROGRAM_PATH" ] && [ -f "$CONFIG_FILE" ]; then
             # 执行登录程序
             log "执行登录程序: $PROGRAM_PATH -c $CONFIG_FILE login"
-            output=$(/usr/bin/python3 "$PROGRAM_PATH" -c "$CONFIG_FILE" login 2>&1)
+            output=$("$PROGRAM_PATH" -c "$CONFIG_FILE" login 2>&1)
             exit_code=$?
             
             # 记录执行结果

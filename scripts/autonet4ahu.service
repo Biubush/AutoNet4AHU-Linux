@@ -5,7 +5,7 @@ Wants=autonet4ahu.timer
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/python3 /usr/local/bin/autonet4ahu/main.py -c /etc/autonet4ahu/config.json login
+ExecStart=/usr/local/bin/autonet4ahu -c /etc/autonet4ahu/config.json login
 Restart=on-failure
 RestartSec=30
 StandardOutput=journal

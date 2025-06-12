@@ -214,11 +214,11 @@ python3 loginCore/main.py -c /etc/autonet4ahu/config.json login
 如需从源码编译二进制文件，可以使用以下命令：
 
 ```bash
-cd linux/loginCore
+cd loginCore
 bash build.sh
 ```
 
-编译后的可执行文件将保存在 `linux/dist/` 目录中。
+编译后的可执行文件将保存在 `dist/` 目录中。
 
 ### 创建发布
 

@@ -31,22 +31,22 @@ jobs:
           VERSION=${{ steps.get_version.outputs.VERSION }}
           VERSION=${VERSION#v}  # Remove 'v' prefix
           echo "Updating version number to $VERSION"
-          sed -i "s/VERSION = \".*\"/VERSION = \"$VERSION\"/" linux/loginCore/version.py
-          cat linux/loginCore/version.py
+          sed -i "s/VERSION = \".*\"/VERSION = \"$VERSION\"/" loginCore/version.py
+          cat loginCore/version.py
 
       - name: Install dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y libsystemd-dev
           python -m pip install --upgrade pip
-          if [ -f linux/loginCore/requirements.txt ]; then
-            pip install -r linux/loginCore/requirements.txt
+          if [ -f loginCore/requirements.txt ]; then
+            pip install -r loginCore/requirements.txt
           fi
           pip install pyinstaller
 
       - name: Build executable
         run: |
-          cd linux/loginCore
+          cd loginCore
           pyinstaller --clean \
             --onefile \
             --name "autonet4ahu" \
@@ -59,9 +59,9 @@ jobs:
       - name: Create release package
         run: |
           mkdir -p release
-          cp linux/dist/autonet4ahu release/
-          cp linux/config.json.template release/config.json.template
-          cp -r linux/scripts release/
+          cp dist/autonet4ahu release/
+          cp config.json.template release/config.json.template
+          cp -r scripts release/
           tar -czvf autonet4ahu-linux.tar.gz -C release .
           echo "RELEASE_FILE=autonet4ahu-linux.tar.gz" >> $GITHUB_ENV
 
