@@ -1,0 +1,11 @@
+[Unit]
+Description=AutoNet4AHU Timer - 定期检查校园网连接
+After=network.target
+
+[Timer]
+OnBootSec=60
+OnUnitActiveSec=300
+AccuracySec=30
+
+[Install]
+WantedBy=timers.target 

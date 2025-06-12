@@ -1,0 +1,118 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    name: Build and Release
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # 获取完整历史以便获取commit信息
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+
+      - name: Get release version
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      - name: Update version number
+        run: |
+          VERSION=${{ steps.get_version.outputs.VERSION }}
+          VERSION=${VERSION#v}  # Remove 'v' prefix
+          echo "Updating version number to $VERSION"
+          sed -i "s/VERSION = \".*\"/VERSION = \"$VERSION\"/" linux/loginCore/version.py
+          cat linux/loginCore/version.py
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libsystemd-dev
+          python -m pip install --upgrade pip
+          if [ -f linux/loginCore/requirements.txt ]; then
+            pip install -r linux/loginCore/requirements.txt
+          fi
+          pip install pyinstaller
+
+      - name: Build executable
+        run: |
+          cd linux/loginCore
+          pyinstaller --clean \
+            --onefile \
+            --name "autonet4ahu" \
+            --distpath "../dist" \
+            --add-data "requirements.txt:." \
+            --hidden-import systemd.journal \
+            "main.py"
+          chmod +x ../dist/autonet4ahu
+
+      - name: Create release package
+        run: |
+          mkdir -p release
+          cp linux/dist/autonet4ahu release/
+          cp linux/config.json.template release/config.json.template
+          cp -r linux/scripts release/
+          tar -czvf autonet4ahu-linux.tar.gz -C release .
+          echo "RELEASE_FILE=autonet4ahu-linux.tar.gz" >> $GITHUB_ENV
+
+      - name: Get previous tag
+        id: previous_tag
+        run: |
+          PREVIOUS_TAG=$(git describe --tags --abbrev=0 ${{ steps.get_version.outputs.VERSION }}^ 2>/dev/null || echo "")
+          echo "PREVIOUS_TAG=$PREVIOUS_TAG" >> $GITHUB_OUTPUT
+          echo "Previous tag: $PREVIOUS_TAG"
+
+      - name: Generate changelog
+        id: generate_changelog
+        run: |
+          if [ -z "${{ steps.previous_tag.outputs.PREVIOUS_TAG }}" ]; then
+            echo "No previous tag found, including all commits"
+            CHANGELOG=$(git log --pretty=format:"* %s (%h)" ${{ steps.get_version.outputs.VERSION }})
+          else
+            echo "Generating changelog from ${{ steps.previous_tag.outputs.PREVIOUS_TAG }} to ${{ steps.get_version.outputs.VERSION }}"
+            CHANGELOG=$(git log --pretty=format:"* %s (%h)" ${{ steps.previous_tag.outputs.PREVIOUS_TAG }}..${{ steps.get_version.outputs.VERSION }})
+          fi
+          
+          # 处理多行字符串为GitHub Actions可接受的格式
+          CHANGELOG="${CHANGELOG//'%'/'%25'}"
+          CHANGELOG="${CHANGELOG//$'\n'/'%0A'}"
+          CHANGELOG="${CHANGELOG//$'\r'/'%0D'}"
+          
+          echo "CHANGELOG=$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "Changelog generated:"
+          echo "$CHANGELOG"
+
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.get_version.outputs.VERSION }}
+          name: AutoNet4AHU Linux ${{ steps.get_version.outputs.VERSION }}
+          body: |
+            # AutoNet4AHU Linux ${{ steps.get_version.outputs.VERSION }}
+            
+            ## 更新内容
+            ${{ steps.generate_changelog.outputs.CHANGELOG }}
+            
+            ## 安装说明
+            1. 下载并解压 autonet4ahu-linux.tar.gz
+            2. 运行 `sudo ./scripts/install.sh` 安装
+            3. 编辑配置文件 `/etc/autonet4ahu/config.json`
+            
+            ## 卸载说明
+            运行 `sudo ./scripts/uninstall.sh`
+          draft: false
+          prerelease: false
+          files: ${{ env.RELEASE_FILE }} 

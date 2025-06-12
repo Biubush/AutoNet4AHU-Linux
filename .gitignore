@@ -1,0 +1,66 @@
+# Python相关
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.installed.cfg
+*.egg
+
+# 编译输出
+dist/
+build/
+*.spec
+loginCore/build/
+loginCore/*.spec
+*.exe
+
+# 虚拟环境
+env/
+venv/
+ENV/
+loginCore_env/
+UI_env/
+
+# 配置文件（可能包含敏感信息）
+config.json
+/etc/autonet4ahu/config.json
+
+# 日志
+*.log
+autonet4ahu.log
+/var/log/autonet4ahu/
+
+# 系统生成文件
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# 临时文件
+tmp/
+temp/
+*.tmp
+
+# 打包文件
+*.tar.gz
+*.zip
+
+# 备份文件
+*.bak
+
+# 项目特定文件
+autonet4ahu
+ahu_eportal_task.xml
+
+# IDE 相关
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# 其他
+*.pid
+.coverage
+htmlcov/ 

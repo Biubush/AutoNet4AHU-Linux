@@ -1,0 +1,15 @@
+[Unit]
+Description=AutoNet4AHU - 安徽大学校园网自动登录
+After=network.target
+Wants=autonet4ahu.timer
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 /usr/local/bin/autonet4ahu/main.py -c /etc/autonet4ahu/config.json login
+Restart=on-failure
+RestartSec=30
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target 
