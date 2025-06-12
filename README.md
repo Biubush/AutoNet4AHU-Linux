@@ -14,15 +14,14 @@ Author: [Biubush](https://github.com/biubush) from [AHU](https://www.ahu.edu.cn/
   - [发布与部署](#3-发布与部署)
 - [技术栈](#技术栈)
 - [使用方法](#使用方法)
-  - [二进制安装](#二进制安装)
-  - [源码安装](#源码安装)
+  - [二进制安装（推荐）](#二进制安装)
   - [卸载](#卸载)
   - [手动运行](#手动运行)
 - [配置文件说明](#配置文件说明)
 - [企业微信通知配置](#企业微信通知配置)
 - [自动化触发原理](#自动化触发原理)
 - [开发指南](#开发指南)
-  - [从源码编译](#从源码编译)
+  - [从源码编译（仅开发用途）](#从源码编译)
   - [创建发布](#创建发布)
 - [常见问题](#常见问题)
 - [注意事项](#注意事项)
@@ -96,9 +95,9 @@ Author: [Biubush](https://github.com/biubush) from [AHU](https://www.ahu.edu.cn/
 
 ## 使用方法
 
-### 二进制安装
+### 二进制安装（推荐）
 
-推荐使用预编译的二进制文件进行安装，无需配置Python环境：
+使用预编译的二进制文件进行安装，无需配置Python环境：
 
 1. 前往[Releases页面](https://github.com/biubush/AutoNet4AHU-Linux/releases)下载最新版本
 2. 解压下载的压缩包
@@ -114,40 +113,6 @@ sudo ./scripts/install.sh
 sudo nano /etc/autonet4ahu/config.json
 ```
 
-### 源码安装
-
-如果你希望从源代码安装：
-
-1. 克隆仓库
-```bash
-git clone https://github.com/biubush/AutoNet4AHU.git
-cd AutoNet4AHU/linux
-```
-
-2. 安装依赖
-```bash
-pip3 install -r loginCore/requirements.txt
-```
-
-3. 编译二进制文件（可选）
-```bash
-cd loginCore
-bash build.sh
-cd ..
-```
-
-4. 创建配置文件
-```bash
-cp config.json.template config.json
-# 编辑配置文件
-nano config.json
-```
-
-5. 执行安装脚本
-```bash
-sudo ./scripts/install.sh
-```
-
 ### 卸载
 
 ```bash
@@ -156,14 +121,8 @@ sudo ./scripts/uninstall.sh
 
 ### 手动运行
 
-如果使用二进制文件：
 ```bash
 /usr/local/bin/autonet4ahu -c /etc/autonet4ahu/config.json login
-```
-
-如果使用源代码：
-```bash
-python3 loginCore/main.py -c /etc/autonet4ahu/config.json login
 ```
 
 ## 配置文件说明
@@ -209,10 +168,22 @@ python3 loginCore/main.py -c /etc/autonet4ahu/config.json login
 
 ## 开发指南
 
-### 从源码编译
+### 从源码编译（仅开发用途）
 
-如需从源码编译二进制文件，可以使用以下命令：
+如果您是开发者，可以从源码编译二进制文件：
 
+1. 克隆仓库
+```bash
+git clone https://github.com/biubush/AutoNet4AHU-Linux.git
+cd AutoNet4AHU-Linux
+```
+
+2. 安装依赖
+```bash
+pip3 install -r loginCore/requirements.txt pyinstaller
+```
+
+3. 编译二进制文件
 ```bash
 cd loginCore
 bash build.sh

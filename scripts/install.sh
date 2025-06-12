@@ -43,16 +43,6 @@ detect_system() {
         OS="Unknown"
         VERSION="Unknown"
     fi
-    
-    # 检查Python版本
-    if command -v python3 &>/dev/null; then
-        PYTHON_VERSION=$(python3 --version | cut -d' ' -f2)
-        echo -e "${BLUE}检测到Python版本: $PYTHON_VERSION${NC}"
-    else
-        echo -e "${RED}错误: 系统未安装Python 3${NC}"
-        echo "请先安装Python 3"
-        exit 1
-    fi
 }
 
 # 安装依赖
@@ -109,7 +99,7 @@ copy_program_files() {
         fi
     else
         echo -e "${RED}错误: 找不到二进制文件 $BINARY_PATH${NC}"
-        echo -e "${YELLOW}请先运行: bash ${PARENT_DIR}/loginCore/build.sh${NC}"
+        echo -e "${YELLOW}请确保预编译的二进制文件存在于 ${PARENT_DIR}/dist/ 目录中${NC}"
         exit 1
     fi
     
@@ -260,7 +250,7 @@ show_completion_info() {
     echo -e "  ${GREEN}journalctl -u autonet4ahu.service${NC}"
     
     echo -e "\n${BLUE}手动运行登录命令:${NC}"
-    echo -e "  ${GREEN}python3 $EXECUTABLE_PATH -c $CONFIG_FILE login${NC}"
+    echo -e "  ${GREEN}$EXECUTABLE_PATH -c $CONFIG_FILE login${NC}"
     
     echo -e "\n${BLUE}如需卸载，请运行:${NC}"
     echo -e "  ${GREEN}sudo $(dirname "$0")/uninstall.sh${NC}\n"
